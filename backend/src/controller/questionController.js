@@ -76,7 +76,8 @@ export const updateQuestion = async (req, res) => {
     if (!question) {
       return res.status(404).json({ message: "Question not found" });
     }
-
+    // console.log(question.quiz.creator.toString());
+    // console.log(req.user.id);
     // Ensure the user updating the question is the quiz creator
     if (question.quiz.creator.toString() !== req.user.id) {
       return res

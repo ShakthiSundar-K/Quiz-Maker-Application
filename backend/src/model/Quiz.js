@@ -4,7 +4,7 @@ const quizSchema = new mongoose.Schema(
   {
     name: { type: String, required: true },
     type: { type: String, enum: ["public", "private"], default: "public" },
-    code: { type: String, required: true, unique: true },
+    code: { type: String, unique: true },
     creator: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",

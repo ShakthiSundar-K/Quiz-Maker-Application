@@ -10,7 +10,7 @@ const verifyAuth = async (req, res, next) => {
 
     // Split the token and remove the "Bearer " part
     const token = authHeader.split(" ")[1];
-
+    // console.log(token);
     // Decode and verify the token
     const payload = auth.decodeToken(token);
     if (!payload) {
@@ -29,6 +29,7 @@ const verifyAuth = async (req, res, next) => {
       email: payload.email,
       role: payload.role,
     };
+    // console.log(req.user.id);
     // Proceed to the next middleware/controller
     next();
   } catch (error) {

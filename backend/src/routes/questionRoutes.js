@@ -24,7 +24,7 @@ router.post("/create", verifyAuth, createQuestion);
 router.put("/update/:questionId", verifyAuth, updateQuestion);
 
 // Delete Question
-router.post("/delete/:questionId", verifyAuth, deleteQuestion);
+router.delete("/delete/:questionId", verifyAuth, deleteQuestion);
 
 // Get Questions for a Specific Quiz
 router.get("/quiz/:quizId", verifyAuth, getQuizQuestions);

@@ -115,21 +115,24 @@ export const addReusableQuestionsToQuiz = async (req, res) => {
       });
     }
 
-    // Step 3: Transform reusable questions for the quiz
-    const questionsToAdd = reusableQuestions.map((question) => ({
-      quiz: quizId,
-      text: question.text,
-      type: question.type,
-      options: question.options,
-      correctAnswer: question.correctAnswer,
-      explanation: question.explanation,
-    }));
+    // Step 3: Add reusable questions directly to the quiz
+    const createdQuestions = await Promise.all(
+      reusableQuestions.map(async (question) => {
+        const newQuestion = new Question({
+          quiz: quizId,
+          text: question.text,
+          type: question.type,
+          options: question.options,
+          correctAnswer: question.correctAnswer,
+          explanation: question.explanation,
+        });
+        return await newQuestion.save();
+      })
+    );
 
-    // Step 4: Add questions to the database
-    const createdQuestions = await Question.insertMany(questionsToAdd);
-
+    // Step 4: Respond with the added questions
     res.status(201).json({
-      message: "Reusable questions added to the quiz successfully",
+      message: "Selected reusable questions added to the quiz successfully",
       questions: createdQuestions,
     });
   } catch (error) {
