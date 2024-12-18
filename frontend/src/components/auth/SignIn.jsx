@@ -1,8 +1,8 @@
 import React, { useState } from "react";
 // import logo from "../../assets/horizontallogo.png";
-import api from "../service/ApiService";
-import ApiRoutes from "../utils/ApiRoutes";
-import { Link, useNavigate } from "react-router-dom";
+import api from "../../service/ApiService";
+import ApiRoutes from "../../utils/ApiRoutes";
+import { useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
 
 const SignIn = () => {
@@ -26,10 +26,9 @@ const SignIn = () => {
       });
 
       toast.success(response.message);
-
+      console.log(response);
       // store the token and other data in session storage
       sessionStorage.setItem("token", response.token);
-      sessionStorage.setItem("role", response.role);
       sessionStorage.setItem("id", response.id);
 
       // Redirect to the login page after successful login

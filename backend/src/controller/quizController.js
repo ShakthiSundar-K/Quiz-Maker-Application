@@ -46,6 +46,24 @@ export const getQuizById = async (req, res) => {
   }
 };
 
+// get all quizzes
+export const getAllQuizzes = async (req, res) => {
+  try {
+    const quizzes = await Quiz.find()
+      .populate("creator", "name") // Populating the creator field with the creator's name
+      .select("-__v"); // Exclude the `__v` field
+
+    if (!quizzes.length) {
+      return res.status(404).json({ message: "No quizzes found" });
+    }
+
+    res.status(200).json(quizzes);
+  } catch (error) {
+    console.error(`Error in ${req.originalUrl}: ${error.message}`);
+    res.status(500).json({ message: "Server error" });
+  }
+};
+
 // Get All Quizzes for User
 export const getUserQuizzes = async (req, res) => {
   try {

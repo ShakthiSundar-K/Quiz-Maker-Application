@@ -1,3 +1,13 @@
-export default function App() {
-  return <h1 className='text-3xl font-bold underline'>Hello world!</h1>;
+import React from "react";
+import AppRoutes from "./utils/AppRoutes";
+import { createBrowserRouter, RouterProvider } from "react-router-dom";
+function App() {
+  const router = createBrowserRouter(AppRoutes);
+  return (
+    <div>
+      <RouterProvider router={router} />
+    </div>
+  );
 }
+
+export default App;

@@ -1,7 +1,7 @@
 import React, { useState } from "react"; // Added useState here
 // import logo from "../assets/horizontallogo.png";
-import api from "../service/ApiService"; // Adjust the import path if necessary
-import ApiRoutes from "../utils/ApiRoutes"; // Adjust the import path if necessary
+import api from "../../service/ApiService"; // Adjust the import path if necessary
+import ApiRoutes from "../../utils/ApiRoutes"; // Adjust the import path if necessary
 import { useParams, useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
 

@@ -25,6 +25,11 @@ const ApiRoutes = {
     PATH: "/quizzes/user-quizzes",
     authenticate: true,
   },
+  // Get all quizzes
+  GETALLQUIZZES: {
+    PATH: "/quizzes/getAllQuizzes",
+    authenticate: true,
+  },
   // Update Quiz
   UPDATEQUIZ: {
     PATH: "/quizzes/update/:id",
