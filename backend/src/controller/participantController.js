@@ -26,7 +26,7 @@ export const joinPublicQuiz = async (req, res) => {
     if (quiz.participants.includes(req.user.id)) {
       return res
         .status(400)
-        .json({ message: "You are already a participant in this quiz" });
+        .json({ message: "You already participated in this quiz" });
     }
 
     // Add user to participants list
@@ -64,7 +64,7 @@ export const joinPrivateQuiz = async (req, res) => {
     if (quiz.participants.includes(req.user.id)) {
       return res
         .status(400)
-        .json({ message: "You are already a participant in this quiz" });
+        .json({ message: "You already participated in this quiz" });
     }
 
     // Add user to participants list
@@ -81,7 +81,7 @@ export const joinPrivateQuiz = async (req, res) => {
 // Submit Answers for Quiz Attempt
 
 export const submitAnswers = async (req, res) => {
-  const { quizId, answers } = req.body; // `answers` is an array of { questionId, userAnswer }
+  const { quizId, answers } = req.body; // answers is an array of { questionId, userAnswer }
   const userId = req.user.id;
 
   try {
@@ -92,76 +92,90 @@ export const submitAnswers = async (req, res) => {
     }
 
     // Step 2: Fetch all questions for the quiz
-    const questions = await Question.find({ quiz: quizId });
+    const questions = await Question.find({ quiz: quizId }).lean();
     if (!questions.length) {
       return res
         .status(404)
         .json({ message: "No questions found for this quiz" });
     }
 
-    // Step 3: Create a map of questionId to question details (correctAnswer + explanation)
+    // Step 3: Prepare a map for question details
     const questionMap = {};
-    questions.forEach((question) => {
-      questionMap[question._id] = {
-        correctAnswer: question.correctAnswer,
-        explanation: question.explanation,
+    questions.forEach((q) => {
+      questionMap[q._id] = {
+        text: q.text,
+        correctAnswer: q.correctAnswer,
+        explanation: q.explanation,
       };
     });
 
-    // Step 4: Compare submitted answers with correct answers and calculate score
+    // Step 4: Evaluate answers and calculate score
     let score = 0;
     const evaluatedAnswers = answers.map((submittedAnswer) => {
       const { questionId, userAnswer } = submittedAnswer;
 
-      const { correctAnswer, explanation } = questionMap[questionId] || {};
+      const question = questionMap[questionId];
+      if (!question) {
+        return {
+          questionId,
+          userAnswer,
+          correctAnswer: null,
+          isCorrect: false,
+          explanation: null,
+        };
+      }
+
       const isCorrect =
-        String(userAnswer).trim() === String(correctAnswer).trim();
+        String(userAnswer).trim() === String(question.correctAnswer).trim();
 
       if (isCorrect) score += 1;
 
       return {
         questionId,
         userAnswer,
-        correctAnswer,
+        correctAnswer: question.correctAnswer,
         isCorrect,
-        explanation: !isCorrect ? explanation : null, // Add explanation only for incorrect answers
+        explanation: !isCorrect ? question.explanation : null,
       };
     });
 
-    // Step 5: Save the attempt to the database
+    // Step 5: Save the attempt to the database (exclude `questionText` at this point)
     const attempt = new Attempt({
       participant: userId,
       quiz: quizId,
-      answers: evaluatedAnswers, // Detailed answer evaluation
+      answers: evaluatedAnswers,
       score,
-      timeTaken: req.body.timeTaken || 0, // Optional: Time taken to complete the quiz
+      timeTaken: req.body.timeTaken || 0,
     });
 
     await attempt.save();
 
-    // Step 6: Update the leaderboard
+    // Step 6: Add question text dynamically for the final response
+    const responseAnswers = evaluatedAnswers.map((answer) => ({
+      questionText:
+        questionMap[answer.questionId]?.text || "Question not found",
+      ...answer,
+    }));
+
+    // Step 7: Update the leaderboard
     let leaderboard = await Leaderboard.findOne({ quiz: quizId });
 
     if (!leaderboard) {
-      // Create a new leaderboard entry if it doesn't exist
       leaderboard = new Leaderboard({
         quiz: quizId,
         rankings: [],
       });
     }
 
-    // Check if the user is already in the leaderboard
     const participantIndex = leaderboard.rankings.findIndex(
       (ranking) => ranking.participant.toString() === userId
     );
 
     if (participantIndex >= 0) {
-      // Update existing participant's score and timeTaken if they retake the quiz
       leaderboard.rankings[participantIndex].score = score;
       leaderboard.rankings[participantIndex].timeTaken =
         req.body.timeTaken || 0;
     } else {
-      // Add a new participant to the leaderboard
       leaderboard.rankings.push({
         participant: userId,
         score,
@@ -169,15 +183,14 @@ export const submitAnswers = async (req, res) => {
       });
     }
 
-    // Save the updated leaderboard
     await leaderboard.save();
 
-    // Step 7: Respond with the results
-    res.status(201).json({
+    // Step 8: Respond with the results
+    res.status(200).json({
       message: "Quiz submitted successfully",
       score,
       totalQuestions: questions.length,
-      evaluatedAnswers,
+      evaluatedAnswers: responseAnswers,
     });
   } catch (error) {
     console.log(`Error in ${req.originalUrl}`, error.message);

@@ -1,28 +1,44 @@
 import Question from "../model/Question.js";
 import Quiz from "../model/Quiz.js";
 
-// Create Question
+// Bulk Create Questions
+
 export const createQuestion = async (req, res) => {
-  const { quizId, text, type, options, correctAnswer, explanation } = req.body;
+  const { questions } = req.body;
 
   try {
-    const quiz = await Quiz.findById(quizId);
-
-    if (!quiz) {
-      return res.status(404).json({ message: "Quiz not found" });
+    // Ensure that questions array is not empty
+    if (!Array.isArray(questions) || questions.length === 0) {
+      return res.status(400).json({ message: "No questions provided" });
     }
 
-    const question = new Question({
-      quiz: quizId,
-      text,
-      type,
-      options,
-      correctAnswer,
-      explanation,
-    });
+    // Process each question in the array
+    const questionsToSave = await Promise.all(
+      questions.map(async (questionData) => {
+        const { quizId, text, type, options, correctAnswer, explanation } =
+          questionData;
 
-    await question.save();
-    res.status(201).json(question);
+        const quiz = await Quiz.findById(quizId); // The await here is valid now inside the async map
+
+        if (!quiz) {
+          throw new Error("Quiz not found");
+        }
+
+        return new Question({
+          quiz: quizId,
+          text,
+          type,
+          options,
+          correctAnswer,
+          explanation,
+        });
+      })
+    );
+
+    // Save all questions in bulk
+    const savedQuestions = await Question.insertMany(questionsToSave);
+
+    res.status(201).json(savedQuestions);
   } catch (error) {
     console.log(`Error in ${req.originalUrl}`, error.message);
     res.status(500).send({ message: error.message || "Internal Server Error" });
@@ -35,11 +51,20 @@ export const getQuizQuestions = async (req, res) => {
   const userId = req.user.id; // Assuming `req.user` is populated by authentication middleware
 
   try {
-    // Check if the quiz exists
-    const quiz = await Quiz.findById(quizId);
+    // Check if the quiz exists and populate the necessary fields (name, timer)
+    const quiz = await Quiz.findById(quizId)
+      .populate("creator", "name")
+      .select("name timer participants");
 
     if (!quiz) {
       return res.status(404).json({ message: "Quiz not found" });
+    }
+
+    // Ensure participants is an array before calling includes
+    if (!quiz.participants || !Array.isArray(quiz.participants)) {
+      return res
+        .status(404)
+        .json({ message: "No participants found for this quiz" });
     }
 
     // Check if the user is a participant
@@ -58,7 +83,8 @@ export const getQuizQuestions = async (req, res) => {
         .json({ message: "No questions found for this quiz" });
     }
 
-    res.status(200).json({ questions });
+    // Returning populated quiz and questions
+    res.status(200).json({ quiz, questions });
   } catch (error) {
     console.log(`Error in ${req.originalUrl}`, error.message);
     res.status(500).send({ message: error.message || "Internal Server Error" });

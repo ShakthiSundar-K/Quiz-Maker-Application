@@ -6,11 +6,10 @@ export const createQuiz = async (req, res) => {
   const { name, type, timer } = req.body;
 
   try {
-    // Conditionally generate the quiz code only if the type is "private"
     const code =
       type === "private"
         ? Math.random().toString(36).substring(2, 8).toUpperCase()
-        : null;
+        : "public"; // Fixed value for public quizzes
 
     const quiz = new Quiz({
       name,
@@ -49,7 +48,7 @@ export const getQuizById = async (req, res) => {
 // get all quizzes
 export const getAllQuizzes = async (req, res) => {
   try {
-    const quizzes = await Quiz.find()
+    const quizzes = await Quiz.find({ type: "public" })
       .populate("creator", "name") // Populating the creator field with the creator's name
       .select("-__v"); // Exclude the `__v` field
 

@@ -68,7 +68,7 @@ function NavBar() {
             {/* Desktop Navigation */}
             <div className='hidden md:flex md:items-center md:justify-center md:space-x-10 md:absolute md:inset-y-0 md:left-1/2 md:-translate-x-1/2 lg:space-x-16'>
               <Link
-                to='/'
+                to='/home'
                 className='text-base font-medium text-gray-900 transition-all duration-200 rounded focus:outline-none hover:text-opacity-50 focus:ring-1 focus:ring-gray-900 focus:ring-offset-2'
               >
                 Home
@@ -106,7 +106,7 @@ function NavBar() {
               <div className='px-1 py-8'>
                 <div className='grid gap-y-7'>
                   <Link
-                    to='/'
+                    to='/home'
                     className='flex items-center p-3 -m-3 text-base font-medium text-gray-900 transition-all duration-200 rounded hover:bg-gray-50 focus:outline-none focus:ring-1 focus:ring-gray-900 focus:ring-offset-2'
                   >
                     Home

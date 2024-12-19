@@ -7,6 +7,8 @@ import ProtectedRoute from "./ProtectedRoute";
 import HomePage from "../pages/HomePage";
 import CreateQuiz from "../components/common/CreateQuiz";
 import JoinQuiz from "../components/common/JoinQuiz";
+import AddQuestions from "../components/common/AddQuestions";
+import DisplayQuestions from "../components/common/DisplayQuestions";
 
 const AppRoutes = [
   {
@@ -49,10 +51,26 @@ const AppRoutes = [
       </ProtectedRoute>
     ),
   },
+  {
+    path: "/quiz/questions/:quizId",
+    element: (
+      <ProtectedRoute>
+        <AddQuestions />
+      </ProtectedRoute>
+    ),
+  },
+  {
+    path: "/questions/quiz/:quizId",
+    element: (
+      <ProtectedRoute>
+        <DisplayQuestions />
+      </ProtectedRoute>
+    ),
+  },
 
   {
     path: "*",
-    element: <Navigate to='/' />,
+    element: <Navigate to='/home' />,
   },
 ];
 
