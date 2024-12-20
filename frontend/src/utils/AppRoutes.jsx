@@ -9,6 +9,11 @@ import CreateQuiz from "../components/common/CreateQuiz";
 import JoinQuiz from "../components/common/JoinQuiz";
 import AddQuestions from "../components/common/AddQuestions";
 import DisplayQuestions from "../components/common/DisplayQuestions";
+import MyQuizzes from "../components/common/myQuizzes";
+import EditQuestion from "../components/common/EditQuestion";
+import EditQuiz from "../components/common/EditQuiz";
+import Analysis from "../components/common/Analysis";
+import LeaderBoard from "../components/common/LeaderBoard";
 
 const AppRoutes = [
   {
@@ -64,6 +69,46 @@ const AppRoutes = [
     element: (
       <ProtectedRoute>
         <DisplayQuestions />
+      </ProtectedRoute>
+    ),
+  },
+  {
+    path: "/questions/update/:quizId",
+    element: (
+      <ProtectedRoute>
+        <EditQuestion />
+      </ProtectedRoute>
+    ),
+  },
+  {
+    path: "/quizzes/update/:id",
+    element: (
+      <ProtectedRoute>
+        <EditQuiz />
+      </ProtectedRoute>
+    ),
+  },
+  {
+    path: "/analytics/quiz/:quizId",
+    element: (
+      <ProtectedRoute>
+        <Analysis />
+      </ProtectedRoute>
+    ),
+  },
+  {
+    path: "/quizzes/user-quizzes",
+    element: (
+      <ProtectedRoute>
+        <MyQuizzes />
+      </ProtectedRoute>
+    ),
+  },
+  {
+    path: "/participants/getLeaderboard/:quizId",
+    element: (
+      <ProtectedRoute>
+        <LeaderBoard />
       </ProtectedRoute>
     ),
   },

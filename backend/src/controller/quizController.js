@@ -1,5 +1,6 @@
 import Quiz from "../model/Quiz.js";
 import User from "../model/User.js";
+import { sendEmail } from "../service/emailService.js";
 
 // Create Quiz
 export const createQuiz = async (req, res) => {
@@ -21,6 +22,20 @@ export const createQuiz = async (req, res) => {
     });
 
     await quiz.save();
+    if (quiz.code !== "public") {
+      try {
+        await sendEmail(
+          req.user.email,
+          "QuizMakerPro",
+          `Thank you for creating a quiz with us.The quiz code for the quiz "${quiz.name}" is ${quiz.code}`
+        );
+        console.log("email sent for private quiz");
+      } catch (emailError) {
+        console.error("Error sending email:", emailError.message);
+        // Optionally, you can notify the user that the email failed
+      }
+    }
+
     res.status(201).json(quiz);
   } catch (error) {
     console.log(`Error in ${req.originalUrl}`, error.message);

@@ -7,6 +7,7 @@ import ApiRoutes from "../../utils/ApiRoutes";
 
 const JoinQuiz = () => {
   const [publicQuizzes, setPublicQuizzes] = useState([]);
+  const [searchQuery, setSearchQuery] = useState(""); // State for search query
   const [privateQuizCode, setPrivateQuizCode] = useState("");
   const [showPrivateQuizModal, setShowPrivateQuizModal] = useState(false);
   const navigate = useNavigate();
@@ -15,8 +16,8 @@ const JoinQuiz = () => {
   useEffect(() => {
     const fetchPublicQuizzes = async () => {
       try {
-        const path = ApiRoutes.GETALLQUIZZES.PATH; // Adjust to your endpoint
-        const authenticate = ApiRoutes.GETALLQUIZZES.authenticate; // Adjust if needed
+        const path = ApiRoutes.GETALLQUIZZES.PATH;
+        const authenticate = ApiRoutes.GETALLQUIZZES.authenticate;
         const response = await api.get(path, { authenticate });
 
         if (response) {
@@ -33,6 +34,29 @@ const JoinQuiz = () => {
     fetchPublicQuizzes();
   }, []);
 
+  // Search quizzes by name or creator
+  const handleSearch = async () => {
+    if (!searchQuery.trim()) {
+      toast.error("Please enter a search query.");
+      return;
+    }
+
+    try {
+      const path = `${ApiRoutes.SEARCHQUIZ.PATH}?name=${searchQuery}`;
+      const authenticate = ApiRoutes.SEARCHQUIZ.authenticate;
+      const response = await api.get(path, { authenticate });
+
+      if (response) {
+        setPublicQuizzes(response); // Update quizzes with search results
+      } else {
+        toast.error("No quizzes found for your search.");
+      }
+    } catch (error) {
+      console.error("Error searching quizzes:", error);
+      toast.error("Error occurred while searching for quizzes.");
+    }
+  };
+
   // Join a public quiz
   const handleJoinPublicQuiz = async (quizId) => {
     try {
@@ -42,7 +66,7 @@ const JoinQuiz = () => {
 
       if (response) {
         toast.success("Successfully joined the public quiz!");
-        navigate(`/questions/quiz/${quizId}`); // Navigate to the quiz page or as needed
+        navigate(`/questions/quiz/${quizId}`);
       } else {
         toast.error("Failed to join the public quiz.");
       }
@@ -70,7 +94,7 @@ const JoinQuiz = () => {
 
       if (response) {
         toast.success("Successfully joined the private quiz!");
-        navigate(`/questions/quiz/${response.quiz._id}`); // Navigate to the quiz page or as needed
+        navigate(`/questions/quiz/${response.quiz._id}`);
       } else {
         toast.error("Failed to join the private quiz.");
       }
@@ -80,64 +104,114 @@ const JoinQuiz = () => {
     }
   };
 
+  // Navigate to the leaderboard page
+  const handleLeaderboard = (quizId) => {
+    navigate(`/participants/getLeaderboard/${quizId}`);
+  };
+
   return (
     <div>
       <NavBar />
       <div className='min-h-screen flex flex-col items-center mt-10 px-4 sm:px-6 lg:px-8'>
         <div className='max-w-4xl w-full bg-white p-6 shadow-lg rounded-lg'>
-          <div className='flex justify-between  mb-6'>
+          <div className='flex justify-between mb-6'>
             <h1 className='text-4xl font-bold text-gray-900'>Join a Quiz</h1>
             <button
               onClick={() => setShowPrivateQuizModal(true)}
-              className='px-4 py-2 bg-gray-900 text-white font-bold rounded-md hover:bg-gray-600'
+              className='px-4 py-2 bg-indigo-600 text-white font-bold rounded-md hover:bg-indigo-700'
             >
               Join a Private Quiz
             </button>
           </div>
+
+          {/* Search Bar */}
+          <div className='mb-6 flex items-center'>
+            <input
+              type='text'
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              placeholder='Search by quiz name or creator'
+              className='px-4 py-2 border border-gray-300 rounded-md mr-4 w-full'
+            />
+            <button
+              onClick={handleSearch}
+              className='px-4 py-2 bg-blue-600 text-white font-bold rounded-md hover:bg-blue-700'
+            >
+              Search
+            </button>
+          </div>
+
           {/* Public Quizzes Table */}
-          <table className='min-w-full divide-y divide-gray-200'>
-            <thead className='bg-gray-50'>
-              <tr>
-                <th className='px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider'>
-                  S.No
-                </th>
-                <th className='px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider'>
-                  Quiz Name
-                </th>
-                <th className='px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider'>
-                  Creator
-                </th>
-                <th className='px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider'>
-                  Action
-                </th>
-              </tr>
-            </thead>
-            <tbody className='bg-white divide-y divide-gray-200'>
-              {publicQuizzes.map((quiz, index) => (
-                <tr key={quiz._id}>
-                  <td className='px-6 py-4 whitespace-nowrap'>{index + 1}</td>
-                  <td className='px-6 py-4 whitespace-nowrap'>{quiz.name}</td>
-                  <td className='px-6 py-4 whitespace-nowrap'>
-                    {quiz.creator.name}
-                  </td>
-                  <td className='px-6 py-4 whitespace-nowrap text-right'>
-                    <button
-                      onClick={() => handleJoinPublicQuiz(quiz._id)}
-                      className='px-4 py-2 bg-green-600 text-white font-bold rounded-md hover:bg-blue-500'
-                    >
-                      Attempt
-                    </button>
-                  </td>
+          <div className='overflow-x-auto'>
+            <table className='min-w-full divide-y divide-gray-200'>
+              <thead className='bg-gray-50'>
+                <tr>
+                  <th className='px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider'>
+                    S.No
+                  </th>
+                  <th className='px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider'>
+                    Quiz Name
+                  </th>
+                  <th className='px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider'>
+                    Creator
+                  </th>
+                  <th className='px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider'>
+                    Action
+                  </th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
+              </thead>
+              <tbody className='bg-white divide-y divide-gray-200'>
+                {publicQuizzes.length > 0 ? (
+                  publicQuizzes.map((quiz, index) => (
+                    <tr key={quiz._id}>
+                      <td className='px-6 py-4 whitespace-nowrap'>
+                        {index + 1}
+                      </td>
+                      <td className='px-6 py-4 whitespace-nowrap'>
+                        {quiz.name}
+                      </td>
+                      <td className='px-6 py-4 whitespace-nowrap'>
+                        {quiz.creator?.name || "Unknown"}
+                      </td>
+                      <td className='px-6 py-4 whitespace-nowrap text-right'>
+                        <button
+                          onClick={() => handleJoinPublicQuiz(quiz._id)}
+                          className='px-4 py-2 bg-green-600 text-white font-bold rounded-md hover:bg-green-700'
+                        >
+                          Attempt
+                        </button>
+                        <button
+                          onClick={() => handleLeaderboard(quiz._id)}
+                          className='ml-4 px-4 py-2 bg-yellow-600 text-white font-bold rounded-md hover:bg-yellow-700'
+                        >
+                          Leaderboard
+                        </button>
+                      </td>
+                    </tr>
+                  ))
+                ) : (
+                  <tr>
+                    <td
+                      colSpan='4'
+                      className='px-6 py-4 text-center text-gray-500'
+                    >
+                      No public quizzes available.
+                    </td>
+                  </tr>
+                )}
+              </tbody>
+            </table>
+          </div>
         </div>
       </div>
 
       {/* Private Quiz Modal */}
       {showPrivateQuizModal && (
-        <div className='fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50'>
+        <div
+          className='fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50'
+          aria-modal='true'
+          role='dialog'
+        >
           <div className='bg-white p-6 rounded-md shadow-lg max-w-sm w-full'>
             <h2 className='text-xl font-bold mb-4'>Enter Private Quiz Code</h2>
             <input
@@ -156,7 +230,7 @@ const JoinQuiz = () => {
               </button>
               <button
                 onClick={handleJoinPrivateQuiz}
-                className='px-4 py-2 bg-blue-600 text-white font-bold rounded-md hover:bg-blue-500'
+                className='px-4 py-2 bg-indigo-600 text-white font-bold rounded-md hover:bg-indigo-700'
               >
                 Join
               </button>

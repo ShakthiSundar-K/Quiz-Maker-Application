@@ -20,6 +20,7 @@ const DisplayQuestions = () => {
   const [isTimerActive, setIsTimerActive] = useState(false);
   const [isSoundOn, setIsSoundOn] = useState(false);
   const [isOverallTimer, setIsOverallTimer] = useState(false);
+  const [isTrackingDisabled, setIsTrackingDisabled] = useState(false); // New state to disable tracking features
 
   useEffect(() => {
     const fetchQuizData = async () => {
@@ -146,10 +147,23 @@ const DisplayQuestions = () => {
     }
   }, [timer, isSoundOn]);
 
+  const attendedQuestionsCount = answers.filter(
+    (answer) => answer.userAnswer
+  ).length;
+
   return (
     <div>
       <NavBar />
       <div className='max-w-3xl mx-auto p-4'>
+        <div className='text-center mb-8'>
+          <h3 className='text-xl font-semibold'>
+            Question {currentQuestionIndex + 1} of {questions.length}
+          </h3>
+          <h4 className='text-lg mt-2'>
+            Attended Questions: {attendedQuestionsCount} / {questions.length}
+          </h4>
+        </div>
+
         <div className='text-center mb-8'>
           {!isQuizFinished && (
             <div className='mt-4 flex justify-center'>
@@ -160,7 +174,7 @@ const DisplayQuestions = () => {
                     ? "bg-purple-600 text-white"
                     : "bg-gray-300 hover:bg-gray-400"
                 }`}
-                // disabled={quizData.timer?.type === "per-question"}
+                disabled={isTrackingDisabled} // Disable when quiz is finished
               >
                 One Question at a Time
               </button>
@@ -171,7 +185,7 @@ const DisplayQuestions = () => {
                     ? "bg-purple-600 text-white"
                     : "bg-gray-300 hover:bg-gray-400"
                 }`}
-                disabled={quizData.timer?.type === "per-question"}
+                disabled={isTrackingDisabled} // Disable when quiz is finished
               >
                 All Questions
               </button>
@@ -203,212 +217,209 @@ const DisplayQuestions = () => {
               </div>
             </div>
           )}
+        </div>
+        {viewOption === "single" && !isQuizFinished && (
+          <div className='bg-white p-6 rounded-lg shadow-lg'>
+            <h2 className='text-2xl font-semibold mb-4'>
+              {questions[currentQuestionIndex]?.text}
+            </h2>
+            <div className='space-y-4'>
+              {questions[currentQuestionIndex]?.options?.map(
+                (option, index) => (
+                  <div
+                    key={index}
+                    className='flex items-center space-x-2'
+                    onClick={() =>
+                      handleAnswerChange(
+                        questions[currentQuestionIndex]._id,
+                        option
+                      )
+                    }
+                  >
+                    <input
+                      type='radio'
+                      name={`question-${questions[currentQuestionIndex]._id}`}
+                      value={option}
+                      checked={answers.find(
+                        (answer) =>
+                          answer.questionId ===
+                            questions[currentQuestionIndex]._id &&
+                          answer.userAnswer === option
+                      )}
+                      onChange={(e) =>
+                        handleAnswerChange(
+                          questions[currentQuestionIndex]._id,
+                          e.target.value
+                        )
+                      }
+                      className='form-radio text-purple-600 transition-all duration-300 transform hover:scale-105'
+                    />
+                    <label className='text-lg'>{option}</label>
+                  </div>
+                )
+              )}
 
-          {viewOption === "single" && !isQuizFinished && (
-            <div className='bg-white p-6 rounded-lg shadow-lg'>
-              <h2 className='text-2xl font-semibold mb-4'>
-                {questions[currentQuestionIndex]?.text}
-              </h2>
-              <div className='space-y-4'>
-                {questions[currentQuestionIndex]?.options?.map(
-                  (option, index) => (
+              {!questions[currentQuestionIndex]?.options && (
+                <textarea
+                  onChange={(e) =>
+                    handleAnswerChange(
+                      questions[currentQuestionIndex]._id,
+                      e.target.value
+                    )
+                  }
+                  placeholder='Write your answer'
+                  className='w-full p-2 border-2 border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-600'
+                />
+              )}
+            </div>
+
+            <div className='flex justify-between mt-6'>
+              <button
+                onClick={handlePrevQuestion}
+                disabled={
+                  currentQuestionIndex === 0 ||
+                  quizData.timer?.type === "per_question"
+                }
+                className='py-2 px-4 bg-gray-300 rounded-lg cursor-pointer disabled:opacity-50'
+              >
+                Previous
+              </button>
+              <button
+                onClick={handleNextQuestion}
+                disabled={
+                  currentQuestionIndex === questions.length - 1 ||
+                  quizData.timer?.type === "per_question"
+                }
+                className='py-2 px-4 bg-purple-600 text-white rounded-lg disabled:opacity-50'
+              >
+                Next Question
+              </button>
+              <button
+                onClick={handleSubmitQuiz}
+                className='py-2 px-4 bg-purple-600 text-white rounded-lg'
+              >
+                Submit Quiz
+              </button>
+            </div>
+          </div>
+        )}
+
+        {viewOption === "all" && !isQuizFinished && (
+          <div className='space-y-6'>
+            {questions.map((question) => (
+              <div
+                key={question._id}
+                className='bg-white p-6 rounded-lg shadow-lg'
+              >
+                <h2 className='text-2xl font-semibold mb-4'>{question.text}</h2>
+                <div className='space-y-4'>
+                  {question.options?.map((option, index) => (
                     <div
                       key={index}
                       className='flex items-center space-x-2'
-                      onClick={() =>
-                        handleAnswerChange(
-                          questions[currentQuestionIndex]._id,
-                          option
-                        )
-                      }
+                      onClick={() => handleAnswerChange(question._id, option)}
                     >
                       <input
                         type='radio'
-                        name={`question-${questions[currentQuestionIndex]._id}`}
+                        name={`question-${question._id}`}
                         value={option}
                         checked={answers.find(
                           (answer) =>
-                            answer.questionId ===
-                              questions[currentQuestionIndex]._id &&
+                            answer.questionId === question._id &&
                             answer.userAnswer === option
                         )}
                         onChange={(e) =>
-                          handleAnswerChange(
-                            questions[currentQuestionIndex]._id,
-                            e.target.value
-                          )
+                          handleAnswerChange(question._id, e.target.value)
                         }
                         className='form-radio text-purple-600 transition-all duration-300 transform hover:scale-105'
                       />
                       <label className='text-lg'>{option}</label>
                     </div>
-                  )
-                )}
+                  ))}
 
-                {!questions[currentQuestionIndex]?.options && (
-                  <textarea
-                    onChange={(e) =>
-                      handleAnswerChange(
-                        questions[currentQuestionIndex]._id,
-                        e.target.value
-                      )
-                    }
-                    placeholder='Write your answer'
-                    className='w-full p-2 border-2 border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-600'
-                  />
-                )}
+                  {!question.options && (
+                    <textarea
+                      onChange={(e) =>
+                        handleAnswerChange(question._id, e.target.value)
+                      }
+                      placeholder='Write your answer'
+                      className='w-full p-2 border-2 border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-600'
+                    />
+                  )}
+                </div>
               </div>
+            ))}
+            <button
+              onClick={handleSubmitQuiz}
+              className='py-2 px-6 bg-purple-600 text-white rounded-lg w-full mt-6'
+            >
+              Submit Quiz
+            </button>
+          </div>
+        )}
 
-              <div className='flex justify-between mt-6'>
-                <button
-                  onClick={handlePrevQuestion}
-                  disabled={
-                    currentQuestionIndex === 0 ||
-                    quizData.timer?.type === "per_question"
-                  }
-                  className='py-2 px-4 bg-gray-300 rounded-lg cursor-pointer disabled:opacity-50'
-                >
-                  Previous
-                </button>
-                <button
-                  onClick={handleNextQuestion}
-                  disabled={
-                    currentQuestionIndex === questions.length - 1 ||
-                    quizData.timer?.type === "per_question"
-                  }
-                  className='py-2 px-4 bg-purple-600 text-white rounded-lg disabled:opacity-50'
-                >
-                  Next Question
-                </button>
-                <button
-                  onClick={handleSubmitQuiz}
-                  className='py-2 px-4 bg-purple-600 text-white rounded-lg'
-                >
-                  Submit Quiz
-                </button>
+        {isQuizFinished && (
+          <div className='text-center'>
+            <h2 className='text-3xl font-semibold'>🎉 Quiz Completed! 🥳</h2>
+            <p className='text-lg mt-4'>
+              Your score: {score} / {questions.length} 🎯
+            </p>
+            <p className='text-lg mt-2'>
+              Questions Attended: {evaluatedAnswers.length} / {questions.length}{" "}
+              📋
+            </p>
+
+            <div className='mt-6'>
+              <h3 className='text-2xl font-semibold mb-4'>Evaluation</h3>
+              <div className='space-y-4'>
+                {evaluatedAnswers.map((evaluatedAnswer, index) => (
+                  <div
+                    key={index}
+                    className={`p-4 rounded-lg ${
+                      evaluatedAnswer.isCorrect
+                        ? "bg-green-100 text-green-700"
+                        : "bg-red-100 text-red-700"
+                    }`}
+                  >
+                    <p className='font-bold'>{questions[index].text}</p>
+                    <p>
+                      Your Answer:{" "}
+                      <span className='font-semibold'>
+                        {evaluatedAnswer.userAnswer}
+                      </span>
+                      {evaluatedAnswer.isCorrect ? (
+                        <span className='ml-2 text-green-700'>✅</span>
+                      ) : (
+                        <span className='ml-2 text-red-700'>❌</span>
+                      )}
+                    </p>
+                    <p>
+                      Correct Answer:{" "}
+                      <span className='font-semibold'>
+                        {evaluatedAnswer.correctAnswer}
+                      </span>
+                      {evaluatedAnswer.isCorrect ? (
+                        <span className='ml-2 text-green-700'>✅</span>
+                      ) : (
+                        <span className='ml-2 text-red-700'>❌</span>
+                      )}
+                    </p>
+                    <p className='italic'>{questions[index].explanation}</p>
+                  </div>
+                ))}
               </div>
             </div>
-          )}
 
-          {viewOption === "all" && !isQuizFinished && (
-            <div className='space-y-6'>
-              {questions.map((question) => (
-                <div
-                  key={question._id}
-                  className='bg-white p-6 rounded-lg shadow-lg'
-                >
-                  <h2 className='text-2xl font-semibold mb-4'>
-                    {question.text}
-                  </h2>
-                  <div className='space-y-4'>
-                    {question.options?.map((option, index) => (
-                      <div
-                        key={index}
-                        className='flex items-center space-x-2'
-                        onClick={() => handleAnswerChange(question._id, option)}
-                      >
-                        <input
-                          type='radio'
-                          name={`question-${question._id}`}
-                          value={option}
-                          checked={answers.find(
-                            (answer) =>
-                              answer.questionId === question._id &&
-                              answer.userAnswer === option
-                          )}
-                          onChange={(e) =>
-                            handleAnswerChange(question._id, e.target.value)
-                          }
-                          className='form-radio text-purple-600 transition-all duration-300 transform hover:scale-105'
-                        />
-                        <label className='text-lg'>{option}</label>
-                      </div>
-                    ))}
-
-                    {!question.options && (
-                      <textarea
-                        onChange={(e) =>
-                          handleAnswerChange(question._id, e.target.value)
-                        }
-                        placeholder='Write your answer'
-                        className='w-full p-2 border-2 border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-600'
-                      />
-                    )}
-                  </div>
-                </div>
-              ))}
+            <div className='mt-6'>
               <button
-                onClick={handleSubmitQuiz}
-                className='py-2 px-6 bg-purple-600 text-white rounded-lg w-full mt-6'
+                onClick={() => window.location.reload()}
+                className='py-2 px-6 bg-purple-600 text-white rounded-lg w-full'
               >
-                Submit Quiz
+                Retry Quiz
               </button>
             </div>
-          )}
-
-          {isQuizFinished && (
-            <div className='text-center'>
-              <h2 className='text-3xl font-semibold'>🎉 Quiz Completed! 🥳</h2>
-              <p className='text-lg mt-4'>
-                Your score: {score} / {questions.length} 🎯
-              </p>
-              <p className='text-lg mt-2'>
-                Questions Attended: {evaluatedAnswers.length} /{" "}
-                {questions.length} 📋
-              </p>
-
-              <div className='mt-6'>
-                <h3 className='text-2xl font-semibold mb-4'>Evaluation</h3>
-                <div className='space-y-4'>
-                  {evaluatedAnswers.map((evaluatedAnswer, index) => (
-                    <div
-                      key={index}
-                      className={`p-4 rounded-lg ${
-                        evaluatedAnswer.isCorrect
-                          ? "bg-green-100 text-green-700"
-                          : "bg-red-100 text-red-700"
-                      }`}
-                    >
-                      <p className='font-bold'>{questions[index].text}</p>
-                      <p>
-                        Your Answer:{" "}
-                        <span className='font-semibold'>
-                          {evaluatedAnswer.userAnswer}
-                        </span>
-                        {evaluatedAnswer.isCorrect ? (
-                          <span className='ml-2 text-green-700'>✅</span>
-                        ) : (
-                          <span className='ml-2 text-red-700'>❌</span>
-                        )}
-                      </p>
-                      <p>
-                        Correct Answer:{" "}
-                        <span className='font-semibold'>
-                          {evaluatedAnswer.correctAnswer}
-                        </span>
-                        {evaluatedAnswer.isCorrect ? (
-                          <span className='ml-2 text-green-700'>✅</span>
-                        ) : (
-                          <span className='ml-2 text-red-700'>❌</span>
-                        )}
-                      </p>
-                      <p className='italic'>{questions[index].explanation}</p>
-                    </div>
-                  ))}
-                </div>
-              </div>
-
-              <div className='mt-6'>
-                <button
-                  onClick={() => window.location.reload()}
-                  className='py-2 px-6 bg-purple-600 text-white rounded-lg w-full'
-                >
-                  Retry Quiz
-                </button>
-              </div>
-            </div>
-          )}
-        </div>
+          </div>
+        )}
       </div>
     </div>
   );
