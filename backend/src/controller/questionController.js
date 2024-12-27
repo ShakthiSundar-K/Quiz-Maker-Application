@@ -68,11 +68,11 @@ export const getQuizQuestions = async (req, res) => {
     }
 
     // Check if the user is a participant
-    if (!quiz.participants.includes(userId)) {
-      return res
-        .status(403)
-        .json({ message: "You are not authorized to view this quiz" });
-    }
+    // if (!quiz.participants.includes(userId)) {
+    //   return res
+    //     .status(403)
+    //     .json({ message: "You are not authorized to view this quiz" });
+    // }
 
     // Fetch questions for the quiz
     const questions = await Question.find({ quiz: quizId });

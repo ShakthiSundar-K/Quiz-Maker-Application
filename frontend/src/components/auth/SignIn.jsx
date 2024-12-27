@@ -5,6 +5,8 @@ import ApiRoutes from "../../utils/ApiRoutes";
 import { useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
 
+import backgroundImage from "../../assets/auth.jpg"; // Import the background image
+
 const SignIn = () => {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false); // Add loading state
@@ -43,15 +45,18 @@ const SignIn = () => {
   };
 
   return (
-    <section className='h-screen flex items-center justify-center'>
-      <div className='flex flex-col w-96 items-center justify-center px-6 pb-12 mx-auto md:h-screen lg:py-0'>
+    <section
+      className='h-screen flex items-center justify-center bg-cover bg-center bg-no-repeat backdrop-blur-3xl'
+      style={{ backgroundImage: `url(${backgroundImage})` }}
+    >
+      <div className='flex flex-col w-96 items-start justify-center px-6 pb-12 mx-auto md:h-screen lg:py-0'>
         {/* <a
           href='#'
           className='flex items-center text-2xl font-semibold text-gray-900'
         >
           <img className='w-36 h-30' src={logo} alt='logo' />
         </a> */}
-        <div className='w-full bg-white rounded-lg shadow md:mt-0 sm:max-w-md xl:p-0 sm:min-w-96 lg:mb-9'>
+        <div className='w-full bg-white rounded-lg shadow md:mt-0 sm:max-w-md xl:p-0 sm:min-w-96 lg:mb-9 backdrop-blur-none'>
           <div className='p-6 space-y-4 md:space-y-6 sm:p-8'>
             <h1 className='text-xl font-bold leading-tight tracking-tight text-gray-900 md:text-2xl'>
               Sign in to your account

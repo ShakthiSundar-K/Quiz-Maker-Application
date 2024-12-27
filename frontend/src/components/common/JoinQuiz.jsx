@@ -118,7 +118,7 @@ const JoinQuiz = () => {
             <h1 className='text-4xl font-bold text-gray-900'>Join a Quiz</h1>
             <button
               onClick={() => setShowPrivateQuizModal(true)}
-              className='px-4 py-2 bg-indigo-600 text-white font-bold rounded-md hover:bg-indigo-700'
+              className='px-4 py-2 bg-gray-900 text-white font-bold rounded-md '
             >
               Join a Private Quiz
             </button>
@@ -131,11 +131,11 @@ const JoinQuiz = () => {
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               placeholder='Search by quiz name or creator'
-              className='px-4 py-2 border border-gray-300 rounded-md mr-4 w-full'
+              className='px-4 py-2 border border-gray-300 rounded-md mr-4 w-full outline-none'
             />
             <button
               onClick={handleSearch}
-              className='px-4 py-2 bg-blue-600 text-white font-bold rounded-md hover:bg-blue-700'
+              className='px-4 py-2  rounded-md text-black outline outline-2'
             >
               Search
             </button>
@@ -176,13 +176,13 @@ const JoinQuiz = () => {
                       <td className='px-6 py-4 whitespace-nowrap text-right'>
                         <button
                           onClick={() => handleJoinPublicQuiz(quiz._id)}
-                          className='px-4 py-2 bg-green-600 text-white font-bold rounded-md hover:bg-green-700'
+                          className='px-4 py-2  text-black outline outline-2  rounded-md '
                         >
                           Attempt
                         </button>
                         <button
                           onClick={() => handleLeaderboard(quiz._id)}
-                          className='ml-4 px-4 py-2 bg-yellow-600 text-white font-bold rounded-md hover:bg-yellow-700'
+                          className='ml-4 px-4 py-2  text-black outline outline-2  rounded-md '
                         >
                           Leaderboard
                         </button>

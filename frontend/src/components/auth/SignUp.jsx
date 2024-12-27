@@ -5,6 +5,8 @@ import ApiRoutes from "../../utils/ApiRoutes";
 import { Link, useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
 
+import backgroundImage from "../../assets/auth.jpg"; // Import the background image
+
 const SignUp = () => {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
@@ -44,7 +46,11 @@ const SignUp = () => {
   };
 
   return (
-    <section className='h-screen flex items-center justify-center'>
+    <section
+      className='h-screen flex items-center justify-center bg-cover bg-center bg-no-repeat backdrop-blur-3xl'
+      style={{ backgroundImage: `url(${backgroundImage})` }}
+    >
+      {" "}
       <div className='flex flex-col w-96 items-center justify-center px-6 pb-12 mx-auto md:h-screen lg:py-0'>
         {/* <a
           href='#'
@@ -52,7 +58,7 @@ const SignUp = () => {
         >
           <img className='w-36 h-30' src={logo} alt='logo' />
         </a> */}
-        <div className='w-full bg-white rounded-lg shadow md:mt-0 sm:max-w-md xl:p-0 sm:min-w-96 lg:mb-9'>
+        <div className='w-full bg-white rounded-lg shadow md:mt-0 sm:max-w-md xl:p-0 sm:min-w-96 lg:mb-9 lg:mt-10'>
           <div className='p-6 space-y-4 md:space-y-6 sm:p-8'>
             <h1 className='text-xl font-bold leading-tight tracking-tight text-gray-900 md:text-2xl'>
               Sign up for your account
