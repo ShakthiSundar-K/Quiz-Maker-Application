@@ -4,12 +4,15 @@ import toast from "react-hot-toast";
 import NavBar from "./NavBar";
 import ApiRoutes from "../../utils/ApiRoutes";
 import api from "../../service/ApiService";
+import { FaPlus } from "react-icons/fa";
+import { useNavigate } from "react-router-dom"; // Import useNavigate
 
 const EditQuestion = () => {
   const [questions, setQuestions] = useState([]);
   const [editingQuestionId, setEditingQuestionId] = useState(null);
   const [quizName, setQuizName] = useState("");
   const { quizId } = useParams();
+  const navigate = useNavigate(); // Initialize navigate
 
   // Fetch questions for the quiz
   useEffect(() => {
@@ -86,6 +89,11 @@ const EditQuestion = () => {
       toast.error("Error occurred while updating question.");
     }
   };
+  // Handle adding a new question
+  const handleAddQuestions = () => {
+    console.log(quizId);
+    navigate(`/quiz/questions/${quizId}`); // Use quizId from useParams
+  };
 
   const handleDelete = async (questionId) => {
     if (!window.confirm("Are you sure you want to delete this question?"))
@@ -116,9 +124,19 @@ const EditQuestion = () => {
     <div>
       <NavBar />
       <div className='max-w-4xl mx-auto p-6 bg-white rounded-lg shadow-md mt-8'>
-        <h1 className='text-3xl font-bold text-center text-gray-900 mb-6'>
-          Manage Questions for {quizName}
-        </h1>
+        <div className='flex justify-between items-center mb-6'>
+          <h1 className='text-3xl font-bold text-gray-900'>
+            Manage Questions for {quizName}
+          </h1>
+          <button
+            onClick={handleAddQuestions}
+            className='p-2  text-black rounded-full shadow-md hover:bg-black hover:text-white'
+            title='Add Question'
+          >
+            <FaPlus />
+          </button>
+        </div>
+
         <div className='space-y-6'>
           {questions.map((question) => (
             <div

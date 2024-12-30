@@ -4,6 +4,9 @@ import toast from "react-hot-toast";
 import NavBar from "./NavBar";
 import api from "../../service/ApiService";
 import ApiRoutes from "../../utils/ApiRoutes";
+import { TbTargetArrow } from "react-icons/tb";
+import { MdLeaderboard } from "react-icons/md";
+import { AiOutlineSearch } from "react-icons/ai";
 
 const JoinQuiz = () => {
   const [publicQuizzes, setPublicQuizzes] = useState([]);
@@ -118,7 +121,7 @@ const JoinQuiz = () => {
             <h1 className='text-4xl font-bold text-gray-900'>Join a Quiz</h1>
             <button
               onClick={() => setShowPrivateQuizModal(true)}
-              className='px-4 py-2 bg-gray-900 text-white font-bold rounded-md '
+              className='px-4 py-2 bg-gray-900 text-white font-bold rounded-md hover:bg-black'
             >
               Join a Private Quiz
             </button>
@@ -135,8 +138,9 @@ const JoinQuiz = () => {
             />
             <button
               onClick={handleSearch}
-              className='px-4 py-2  rounded-md text-black outline outline-2'
+              className='flex items-center px-4 py-2 rounded-md bg-white text-black border border-black hover:bg-black hover:text-white'
             >
+              <AiOutlineSearch className='mr-2' />
               Search
             </button>
           </div>
@@ -174,18 +178,22 @@ const JoinQuiz = () => {
                         {quiz.creator?.name || "Unknown"}
                       </td>
                       <td className='px-6 py-4 whitespace-nowrap text-right'>
-                        <button
-                          onClick={() => handleJoinPublicQuiz(quiz._id)}
-                          className='px-4 py-2  text-black outline outline-2  rounded-md '
-                        >
-                          Attempt
-                        </button>
-                        <button
-                          onClick={() => handleLeaderboard(quiz._id)}
-                          className='ml-4 px-4 py-2  text-black outline outline-2  rounded-md '
-                        >
-                          Leaderboard
-                        </button>
+                        <div className='flex flex-col md:flex-row md:justify-end gap-2'>
+                          <button
+                            onClick={() => handleJoinPublicQuiz(quiz._id)}
+                            className='flex items-center px-4 py-2 rounded-md bg-white text-black border border-black hover:bg-black hover:text-white'
+                          >
+                            <TbTargetArrow className='mr-2' />
+                            Attempt
+                          </button>
+                          <button
+                            onClick={() => handleLeaderboard(quiz._id)}
+                            className='flex items-center px-4 py-2 rounded-md bg-white text-black border border-black hover:bg-black hover:text-white'
+                          >
+                            <MdLeaderboard className='mr-2' />
+                            Leaderboard
+                          </button>
+                        </div>
                       </td>
                     </tr>
                   ))

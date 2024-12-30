@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { FaEdit, FaQuestionCircle, FaChartBar } from "react-icons/fa";
 import ApiRoutes from "../../utils/ApiRoutes";
 import api from "../../service/ApiService";
 import toast from "react-hot-toast";
@@ -51,7 +52,7 @@ const MyQuizzes = () => {
                   <th className='px-6 py-3 text-left text-sm font-medium text-gray-800'>
                     Quiz Name
                   </th>
-                  <th className='px-6 py-3 text-left text-sm font-medium text-gray-800'>
+                  <th className='px-6 py-3 text-center text-sm font-medium text-gray-800'>
                     Actions
                   </th>
                 </tr>
@@ -67,24 +68,27 @@ const MyQuizzes = () => {
                     </td>
                     <td className='px-6 py-4 space-y-2 sm:space-y-0 sm:space-x-4 flex flex-col sm:flex-row items-start sm:items-center'>
                       <button
-                        className='px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 w-full sm:w-auto'
+                        className='px-4 py-2 text-black rounded-md hover:bg-black hover:text-white flex items-center space-x-2 border border-black'
                         onClick={() => navigate(`/quizzes/update/${quiz._id}`)}
                       >
-                        Edit Quiz
+                        <FaEdit className='text-lg' />
+                        <span>Edit Quiz</span>
                       </button>
                       <button
-                        className='px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 w-full sm:w-auto'
+                        className='px-4 py-2 text-black rounded-md hover:bg-black hover:text-white flex items-center space-x-2 border border-black'
                         onClick={() =>
                           navigate(`/questions/update/${quiz._id}`)
                         }
                       >
-                        Edit Questions
+                        <FaEdit className='text-lg' />
+                        <span>Edit Questions</span>
                       </button>
                       <button
-                        className='px-4 py-2 bg-purple-600 text-white rounded-md hover:bg-purple-700 w-full sm:w-auto'
+                        className='px-4 py-2 text-black rounded-md hover:bg-black hover:text-white flex items-center space-x-2 border border-black'
                         onClick={() => navigate(`/analytics/quiz/${quiz._id}`)}
                       >
-                        Analysis
+                        <FaChartBar className='text-lg' />
+                        <span>Analysis</span>
                       </button>
                     </td>
                   </tr>
