@@ -78,14 +78,7 @@ function NavBar() {
                 to='/questionpool'
                 className='text-base font-medium text-gray-900 transition-all duration-200 rounded focus:outline-none hover:text-opacity-50 focus:ring-1 focus:ring-gray-900 focus:ring-offset-2'
               >
-                QuestionPool
-              </Link>
-
-              <Link
-                to='/quizzes/user-quizzes'
-                className='text-base font-medium text-gray-900 transition-all duration-200 rounded focus:outline-none hover:text-opacity-50 focus:ring-1 focus:ring-gray-900 focus:ring-offset-2'
-              >
-                MyQuizzes
+                Quiz
               </Link>
             </div>
 

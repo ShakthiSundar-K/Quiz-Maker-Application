@@ -68,7 +68,7 @@ const MyQuizzes = () => {
                     </td>
                     <td className='px-6 py-4 space-y-2 sm:space-y-0 sm:space-x-4 flex flex-col sm:flex-row items-start sm:items-center'>
                       <button
-                        className='px-4 py-2 text-black rounded-md hover:bg-black hover:text-white flex items-center space-x-2 border border-black'
+                        className='px-4 py-2 text-black round`ed-md hover:bg-black hover:text-white flex items-center space-x-2 border border-black'
                         onClick={() => navigate(`/quizzes/update/${quiz._id}`)}
                       >
                         <FaEdit className='text-lg' />
