@@ -73,13 +73,18 @@ function NavBar() {
               >
                 Home
               </Link>
-
               <Link
+                to='/quizzes/user-quizzes'
+                className='flex items-center p-3 -m-3 text-base font-medium text-gray-900 transition-all duration-200 rounded hover:bg-gray-50 focus:outline-none focus:ring-1 focus:ring-gray-900 focus:ring-offset-2'
+              >
+                MyQuizzes
+              </Link>
+              {/* <Link
                 to='/questionpool'
                 className='text-base font-medium text-gray-900 transition-all duration-200 rounded focus:outline-none hover:text-opacity-50 focus:ring-1 focus:ring-gray-900 focus:ring-offset-2'
               >
                 Quiz
-              </Link>
+              </Link> */}
             </div>
 
             {/* Call to Action Button */}
