@@ -1,6 +1,6 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { FaEdit, FaQuestionCircle, FaChartBar } from "react-icons/fa";
+import { FaEdit, FaChartBar } from "react-icons/fa";
 import ApiRoutes from "../../utils/ApiRoutes";
 import api from "../../service/ApiService";
 import toast from "react-hot-toast";

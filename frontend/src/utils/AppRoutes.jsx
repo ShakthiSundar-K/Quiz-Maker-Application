@@ -9,7 +9,7 @@ import CreateQuiz from "../components/common/CreateQuiz";
 import JoinQuiz from "../components/common/JoinQuiz";
 import AddQuestions from "../components/common/AddQuestions";
 import DisplayQuestions from "../components/common/DisplayQuestions";
-import MyQuizzes from "../components/common/myQuizzes";
+import MyQuizzes from "../components/common/MyQuizzes";
 import EditQuestion from "../components/common/EditQuestion";
 import EditQuiz from "../components/common/EditQuiz";
 import Analysis from "../components/common/Analysis";
